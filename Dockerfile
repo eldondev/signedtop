@@ -1,10 +1,12 @@
 # Container is based on a preexisting image that contains the Go tools needed
 # to compile and install
-FROM golang:1.10
+FROM golang:1.10 AS builder
 
 # Project URI based on repository URL 
-ENV PROJECT_URI=github.com/smartedge/
+ENV PROJECT_URI=git.eldondev.com/smartedge/
 ENV PROJECT_DIR=${GOPATH}/src/${PROJECT_URI}
+ENV BIN_DIR=${GOPATH}/bin
+
 
 # Create project directory
 RUN mkdir -p ${PROJECT_DIR}
@@ -16,10 +18,19 @@ WORKDIR ${PROJECT_DIR}
 COPY . ${PROJECT_DIR}
 
 # Compile and install code
-RUN go install ${PROJECT_URI}/...
+RUN go install -tags netgo -ldflags '-w'  ${PROJECT_URI}/...
+
+RUN cp ${BIN_DIR}/smartedge /
+
+FROM alpine:latest
+
+WORKDIR root
+
+COPY --from=builder /smartedge ./app
 
 # Configure the container entrypoint so that it runs the compiled program. In
 # this case, we utilize the shell to enable variable substitution for the
 # GOPATH variable (for more info, refer to Docker's documentation:
 # https://docs.docker.com/engine/reference/builder/#shell-form-entrypoint-example) 
-ENTRYPOINT ["sh", "-c", "$GOPATH/bin/codechallenge"]
+ENTRYPOINT ["/root/app"]
+
