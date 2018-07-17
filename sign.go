@@ -19,12 +19,14 @@ import (
 	"os"
 )
 
+// The name to store the generated key, since we should reuse it on subsequent invocations
 var GENERATED_KEY_NAME = ".eldon-generated-key"
 
+// This struct should serialize nicely to json for us
 type SignedMessage struct {
-	Message   string
-	Signature string
-	PubKey    string
+	Message   string `json:"message"`
+	Signature string `json:"signature"`
+	PubKey    string `json:"pubkey"`
 }
 
 func (c *SignedMessage) generateSignature(key *ecdsa.PrivateKey, rand io.Reader) error {
@@ -145,7 +147,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	output, err := json.Marshal(tosign)
+	output, err := json.MarshalIndent(tosign,"","  ")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -153,5 +155,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf(string(output))
+	fmt.Printf("%s\n", string(output))
 }
