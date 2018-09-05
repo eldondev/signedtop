@@ -1,0 +1,31 @@
+syntax = "proto3";
+package twitch.twirp.example.helloworld;
+option go_package = "helloworld";
+
+service HelloWorld {
+  rpc GetTop(EmptyParams) returns (Block);
+  rpc GetBlock(BlockId) returns (Block);
+  rpc GetPubKey(EmptyParams) returns (PubKey);
+  rpc PleaseSign(DataToSign) returns (Block);
+}
+
+message EmptyParams {}
+
+message BlockId {
+  int64 block_id = 1;
+}
+
+message DataToSign {
+  bytes data = 1;
+}
+
+message PubKey {
+  bytes pubkey = 1;
+}
+
+message Block {
+  int64 block_id = 1;
+  int64 signed_time = 2;
+  bytes signature = 3;
+  bytes signeddata = 4;
+}
