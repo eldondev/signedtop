@@ -1,8 +1,8 @@
 syntax = "proto3";
-package twitch.twirp.example.helloworld;
-option go_package = "helloworld";
+package eldondev.signedtop;
+option go_package = "signedtop";
 
-service HelloWorld {
+service SignedTop {
   rpc GetTop(EmptyParams) returns (Block);
   rpc GetBlock(BlockId) returns (Block);
   rpc GetPubKey(EmptyParams) returns (PubKey);
